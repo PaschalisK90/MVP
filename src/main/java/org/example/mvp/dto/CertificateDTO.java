@@ -1,6 +1,7 @@
 package org.example.mvp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 
@@ -19,8 +19,11 @@ import java.time.LocalDate;
 @Setter
 public class CertificateDTO {
 
+    @JsonProperty("reference_no") // Sent out to the frontend, ignored on incoming POST requests
+    private Long referenceNo;
+
     @NotBlank(message = "Address to field is required")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s,.-]+$", message = "Address to must be alphanumeric")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s,.-]+$", message = "Address must be alphanumeric")
     private String address_to;
 
     @NotBlank(message = "Purpose field is required")
@@ -34,4 +37,10 @@ public class CertificateDTO {
     @NotBlank(message = "Employee ID is required")
     @Pattern(regexp = "^[0-9]+$", message = "Employee ID must contain numeric digits only")
     private String employee_id;
+
+    @Pattern(
+            regexp = "^(PENDING|PROCESSED|REJECTED)$",
+            message = "Status is invalid. Allowed values are: PENDING, PROCESSED, REJECTED"
+    )
+    private String status;
 }

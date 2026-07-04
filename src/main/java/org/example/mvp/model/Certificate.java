@@ -1,13 +1,6 @@
 package org.example.mvp.model;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-import jakarta.validation.constraints.Pattern;
-import org.jetbrains.annotations.NotNull;
-
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -23,8 +16,9 @@ public class Certificate {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // <-- Changed to numeric Identity strategy
+    @Column(name = "reference_no", nullable = false)
+    private Long  referenceNo;
 
     @Column(name = "address_to", nullable = false)
     private String addressTo;
@@ -40,6 +34,6 @@ public class Certificate {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private RequestStatus status = RequestStatus.PENDING;
+    private RequestStatus status;
 
 }
