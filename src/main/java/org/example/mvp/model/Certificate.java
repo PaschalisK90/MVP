@@ -16,7 +16,7 @@ public class Certificate {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // <-- Changed to numeric Identity strategy
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reference_no", nullable = false)
     private Long  referenceNo;
 

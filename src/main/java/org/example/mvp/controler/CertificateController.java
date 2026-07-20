@@ -38,7 +38,7 @@ public class CertificateController {
     @GetMapping(value = "getFiltered", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CertificateDTO>> getRequests(
             @RequestParam String employeeId,
-            @RequestParam(required = false) Long referenceNo, // 1. Changed Long to String to match UUID id field type
+            @RequestParam(required = false) Long referenceNo,
             @RequestParam(required = false) String addressTo,
             @RequestParam(required = false) Certificate.RequestStatus status,
             @PageableDefault(size = 10) Pageable pageable) {
