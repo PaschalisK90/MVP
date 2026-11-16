@@ -35,7 +35,7 @@ public class CertificateController {
         return ResponseEntity.ok(certificateService.createRequest(certificateDTO));
     }
 
-    @GetMapping(value = "getFiltered", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "getFiltered", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CertificateDTO>> getRequests(
             @RequestParam String employeeId,
             @RequestParam(required = false) Long referenceNo,

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -27,27 +28,34 @@ public CertificateDTO findById(Long uuid){
     }
 }
 
-    public CertificateDTO update(CertificateDTO certificateDTO){
+    public CertificateDTO update(CertificateDTO certificateDTO) {
         try {
             Certificate certificate = certificateRepository.findById(certificateDTO.getReferenceNo())
-                    .orElseThrow(() -> new RuntimeException("Certificate request not found with reference number: " + certificateDTO.getReferenceNo()));
+                    .orElseThrow(() -> new RuntimeException("Certificate not found"));
 
-            // 2. F06-R01 Rule: Strictly block if status is not PENDING
             if (certificate.getStatus() != Certificate.RequestStatus.PENDING) {
-                throw new IllegalStateException("Cannot update request. Only PENDING (unprocessed) requests can be modified.");
+                throw new IllegalStateException("Only PENDING can be updated");
+            }
+            certificateDTO = mapper.toDto(certificate);
+            RestTemplate restTemplate = new RestTemplate();
+             certificateDTO = restTemplate.postForObject(
+                    "http://localhost:8081/api/approval/approve",
+                    certificateDTO,
+                    CertificateDTO.class
+            );
+
+            assert certificateDTO != null;
+            if (!certificateDTO.getStatus().equals(Certificate.RequestStatus.PROCESSED.toString())) {
+                throw new IllegalStateException("Approval rejected by external service");
             }
 
-            // 3. F06-R01 Rule: Partial update -> modify only the purpose field
+            certificate = mapper.toEntity(certificateDTO);
             certificate.setPurpose(certificateDTO.getPurpose());
+            Certificate updated = certificateRepository.save(certificate);
+            return mapper.toDto(updated);
 
-            // 4. Save and map back to output DTO
-            Certificate updatedCertificate = certificateRepository.save(certificate);
-            return mapper.toDto(updatedCertificate);
-
-        } catch (IllegalStateException e) {
-            throw e; // Caught cleanly by your GlobalExceptionHandler
         } catch (Exception e) {
-            throw new RuntimeException("Error during the update: " + e.getMessage(), e);
+            throw new RuntimeException("Error during update: " + e.getMessage(), e);
         }
     }
 
