@@ -36,4 +36,8 @@ public class Certificate {
     @Column(name = "status", nullable = false)
     private RequestStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
+    private Employee employee;
+
 }
