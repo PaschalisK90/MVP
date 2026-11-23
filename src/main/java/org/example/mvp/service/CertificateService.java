@@ -6,6 +6,7 @@ import org.example.mvp.dto.CertificateDTO;
 import org.example.mvp.mapper.CertificateMapper;
 import org.example.mvp.model.Certificate;
 import org.example.mvp.repository.CertificateRepository;
+import org.example.mvp.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,6 +29,7 @@ import java.util.List;
 public class CertificateService {
     private final CertificateMapper mapper;
     private final CertificateRepository certificateRepository;
+    private final EmployeeRepository employeeRepository;
 
 public CertificateDTO findById(Long uuid){
     try {
@@ -62,6 +64,8 @@ public CertificateDTO findById(Long uuid){
             this.createPDFCertificate(certificateDTO, "certificate_" + certificateDTO.getReferenceNo() + ".pdf");
 
             certificate = mapper.toEntity(certificateDTO);
+            certificate.setEmployee(employeeRepository.findById(Long.valueOf(certificateDTO.getEmployee_id()))
+                    .orElseThrow(() -> new RuntimeException("Employee not found")));
             certificate.setPurpose(certificateDTO.getPurpose());
             Certificate updated = certificateRepository.save(certificate);
             return mapper.toDto(updated);
@@ -82,6 +86,8 @@ public CertificateDTO findById(Long uuid){
             assert certificateDTO != null;
             this.createPDFCertificate(certificateDTO, "certificate_" + certificateDTO.getReferenceNo() + ".pdf");
             Certificate certificate = mapper.toEntity(certificateDTO);
+            certificate.setEmployee(employeeRepository.findById(Long.valueOf(certificateDTO.getEmployee_id()))
+                    .orElseThrow(() -> new RuntimeException("Employee not found")));
             return mapper.toDto(certificateRepository.save(certificate));
         } catch (Exception e) {
             throw new RuntimeException("Error creating certificate request: " + e.getMessage(), e);
@@ -230,8 +236,9 @@ public CertificateDTO findById(Long uuid){
 
         try {
             // Enforce F04-R01: Must always filter by the current employeeId
+            Long employeeIdValue = Long.valueOf(employeeId);
             Specification<Certificate> spec = Specification.where((root, query, cb) ->
-                    cb.equal(root.get("employeeId"), employeeId));
+                    cb.equal(root.join("employee").get("employeeId"), employeeIdValue));
 
             if (referenceNo != null) {
                 spec = spec.and((root, query, cb) -> cb.equal(root.get("referenceNo"), referenceNo));

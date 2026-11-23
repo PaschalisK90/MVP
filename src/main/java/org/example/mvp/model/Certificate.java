@@ -29,9 +29,6 @@ public class Certificate {
     @Column(name = "issued_on", nullable = false)
     private LocalDate issuedOn;
 
-    @Column(name = "employee_id", nullable = false)
-    private String employeeId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private RequestStatus status;

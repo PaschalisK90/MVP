@@ -1,12 +1,7 @@
 package org.example.mvp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +15,15 @@ public class EmployeeDTO {
 
     @JsonProperty("employee_id") // Sent out to the frontend, ignored on incoming POST requests
     private Long employeeId;
+
+    @JsonProperty("employee_number")
+    private Integer  employeeNumber;
+
+    @JsonProperty("address_to")
+    private String addressTo;
+
+    @JsonProperty("position")
+    private String position;
 
     @JsonProperty("employee_name")
     @NotBlank(message = "Employee Name field is required")
